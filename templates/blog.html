@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Build A Blog</h1>
+    <h2>Add a blog post</h2>
+    <form method='post'>
+        <label>
+            Blog post title:
+            <input type="text" name='task' />
+        </label>
+        <p></p>
+        <label>
+            Blog post:
+            <textarea rows="6" cols ="50" name="post"></textarea>
+        </label> <p></p>
+        <input type="submit" value='Add Blog Post' />
+    </form>
+
+    <hr />
+
+    {% if tasks|length == 0 %}
+    <p>No tasks yet</p>
+    {% else %}
+
+        <ul>
+            {% for task in tasks %}
+            <li>{{task.title}}
+                <form method="POST" action="/delete-task" style="display:inline-block;">
+                    <input type="hidden" name="task-id" value="{{task.id}}" />
+                    
+                </form>
+            </li> 
+            <li>{{task.body}}
+                <form method="POST" action="/delete-task" style="display:inline-block;">
+                    <input type="hidden" name="task-id" value="{{task.id}}" />
+                    
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+
+    {% endif %}
+
+    <hr />
+
+
+
+{% endblock %}
