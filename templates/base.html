@@ -3,12 +3,19 @@
 <html>
     <head>
         <title>{{title}}</title>
+        <style>
+            .error {
+                color: red;
+            }
+        </style>
     </head>
 <body>
 
     <div>
         <a href='/blog'>All Blogs</a>
+        <a href='/'>Home</a>
         <a href='/newpost'>Add New Post</a>
+        <a href='/logout'>Log Out</a>
     </div>
 
     {% with messages = get_flashed_messages(with_categories=True) %}
