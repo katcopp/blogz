@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- use query paramter passed in to grab title and body from sql -->
+{% for blog in blogs %}
+
+<h2>{{blog.title}}</h2>
+<p>{{blog.body}}
+</p>
+
+
+
+{% endfor %}
+
+
+{% endblock %}

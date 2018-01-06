@@ -13,7 +13,10 @@
 
             <p>{{blog.body}}
             </p>
+            
+            <p>Written by: <a href=./blog?user_id={{blog.owner_id}}>{{blog.owner_id}}</a></p>
             {% endfor %}
+            
         
 
     {% endif %}

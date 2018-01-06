@@ -33,7 +33,7 @@ class Blog(db.Model):
 
 @app.before_request
 def require_login():
-    allowed_routes = ['login', 'register', 'blog']
+    allowed_routes = ['login', 'register', 'list_blogs', 'index']
     if request.endpoint not in allowed_routes and 'username' not in session:
         return redirect('/login')
 
@@ -101,24 +101,43 @@ def register():
 @app.route('/logout')
 def logout():
     del session['username']
-    return redirect('/login')
+    return redirect('/blog')
+
+@app.route('/', methods = ['GET'])
+def index():
+    users = User.query.all()
+
+    id = request.args.get('id')
+    blogs = Blog.query.filter_by(owner_id = id).all()
+
+    if id:
+        return render_template('singleuser.html', blogs = blogs)
+    else:
+        return render_template('index.html', users = users)
 
 
 @app.route('/blog', methods=['GET'])
-def index():
-    owner = User.query.filter_by(username=session['username']).first()
-    id = owner.id
-    blogs = Blog.query.filter_by(owner_id=id).all()
+def list_blogs():
+    blogs = Blog.query.all()
+    #users = Users.query.all()
+
+    owner_id = request.args.get('id')
+    blog = Blog.query.filter_by(id=owner_id).first()
+
+    user_id = request.args.get('user_id')
+    user_blogs = Blog.query.filter_by(owner_id = user_id).all()
     
-    id = request.args.get('id')
-    blog = Blog.query.filter_by(id=id).first()
-    
-    if not id:
-        return render_template('blog.html',title="Build A Blog!", 
-            blogs= blogs)
-    
-    else:
+    if owner_id:
         return render_template('singlepost.html', blog=blog)
+    
+    elif user_id:
+        return render_template('singleuser.html', blogs=user_blogs)
+
+    else: 
+        return render_template('blog.html',title="Build A Blog!", 
+            blogs=blogs)
+    
+  
 
 @app.route('/newpost', methods=['POST', 'GET'])
 def newpost():
