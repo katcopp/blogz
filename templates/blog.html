@@ -13,15 +13,17 @@
 
             <p>{{blog.body}}
             </p>
-            
-            <p>Written by: <a href=./blog?user_id={{blog.owner_id}}>{{blog.owner_id}}</a></p>
-            {% endfor %}
-            
+                {% for user in users %}
+                    {% if user.id == blog.owner_id %}
+                <p>Written by: <a href=./blog?user_id={{blog.owner_id}}>{{user.username}}</a></p>
+                    {% endif %}
+                {% endfor %}
+            {% endfor %} 
         
 
     {% endif %}
 
-    <hr />
+   <hr />
 
 
 

@@ -26,10 +26,10 @@ class Blog(db.Model):
     body = db.Column(db.String(5000))
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    def __init__(self, title, body, owner_id):
+    def __init__(self, title, body, owner):
         self.title = title
         self.body = body
-        self.owner_id = owner_id
+        self.owner = owner
 
 @app.before_request
 def require_login():
@@ -79,7 +79,7 @@ def register():
             flash("Passwords don't match!!!", 'error')
             error_present= True
 
-        elif username and username == existing_user.username:
+        elif username and existing_user:
             flash('User already exists!', 'error')
             error_present = True
 
@@ -119,23 +119,28 @@ def index():
 @app.route('/blog', methods=['GET'])
 def list_blogs():
     blogs = Blog.query.all()
-    #users = Users.query.all()
+    users = User.query.all()
 
-    owner_id = request.args.get('id')
-    blog = Blog.query.filter_by(id=owner_id).first()
+    blog_id = request.args.get('id')
+    blog = Blog.query.filter_by(id=blog_id).first()
+  
 
     user_id = request.args.get('user_id')
     user_blogs = Blog.query.filter_by(owner_id = user_id).all()
     
-    if owner_id:
-        return render_template('singlepost.html', blog=blog)
+    #display individual post
+    if blog_id:
+        blog_user = blog.owner_id
+        user = User.query.filter_by(id=blog_user).first()
+        return render_template('singlepost.html', blog=blog, user=user)
     
+    #display single user posts
     elif user_id:
         return render_template('singleuser.html', blogs=user_blogs)
 
     else: 
         return render_template('blog.html',title="Build A Blog!", 
-            blogs=blogs)
+            blogs=blogs, users=users)
     
   
 
@@ -155,12 +160,13 @@ def newpost():
             flash("Please enter body!")
             return render_template('newpost.html', title = title)
         
-        new_post = Blog(title, body, owner_id)
+        new_post = Blog(title, body, owner)
         db.session.add(new_post)
         db.session.commit()
         blog = Blog.query.filter_by(title=title).first()
+        user = User.query.filter_by(id = owner_id).first()
 
-        return render_template('singlepost.html', blog = blog)
+        return render_template('singlepost.html', blog = blog, user = user)
 
     else: 
         return render_template('newpost.html')
